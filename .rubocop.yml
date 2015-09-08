@@ -1,0 +1,29 @@
+AllCops:
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'lib/**/*'
+    - 'bin/**/*'
+    - '_plans/**/*'
+
+Metrics/LineLength:
+  Max: 95
+
+# Assignment Branch Condition size.
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/MethodLength:
+  Max: 15
+
+# When enabled, enforces rule against parallel assignment.
+Style/ParallelAssignment:
+  Enabled: false
+
+# When enabled, enforces nested instead of compact module-class definitions.
+ClassAndModuleChildren:
+  Enabled: false
+
+# When enabled, enforces rule against using prefix `_` for a variable that is used.
+Lint/UnderscorePrefixedVariableName:
+  Enabled: false
