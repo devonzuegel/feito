@@ -69,7 +69,6 @@ group :test do
   gem 'selenium-webdriver',         '2.45.0'
   gem 'mutant',                     '~> 0.8'
   gem 'mutant-rspec',               '~> 0.8'
-  gem 'elasticsearch-extensions'
 end
 
 group :production do

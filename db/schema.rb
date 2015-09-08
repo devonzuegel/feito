@@ -11,12 +11,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_150_908_164_611) do
-  create_table 'users', force: :cascade do |t|
-    t.string 'name'
-    t.string 'provider'
-    t.string 'uid'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
+ActiveRecord::Schema.define(version: 20150908221233) do
+
+  create_table "steps", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "due"
+    t.boolean  "completed"
+    t.integer  "task_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
+
+  add_index "steps", ["task_id"], name: "index_steps_on_task_id"
+
+  create_table "tasks", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "due"
+    t.boolean  "completed"
+    t.boolean  "archived"
+    t.datetime "schedule"
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "tasks", ["user_id"], name: "index_tasks_on_user_id"
+
+  create_table "users", force: :cascade do |t|
+    t.string   "name"
+    t.string   "provider"
+    t.string   "uid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
 end

@@ -45,7 +45,6 @@ GEM
       abstract_type (~> 0.0.7)
       adamantium (~> 0.1)
       equalizer (~> 0.0.8)
-    ansi (1.5.0)
     arel (6.0.3)
     ast (2.1.0)
     astrolabe (1.3.1)
@@ -123,9 +122,6 @@ GEM
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
-    elasticsearch-extensions (0.0.18)
-      ansi
-      ruby-prof
     equalizer (0.0.11)
     erubis (2.7.0)
     execjs (2.6.0)
@@ -373,7 +369,6 @@ GEM
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.4)
-    ruby-prof (0.15.8)
     ruby-progressbar (1.7.5)
     ruby2ruby (2.2.0)
       ruby_parser (~> 3.1)
@@ -485,7 +480,6 @@ DEPENDENCIES
   coffee-rails (~> 4.1.0)
   contracts (= 0.9)
   database_cleaner (= 1.4.1)
-  elasticsearch-extensions
   factory_girl_rails (= 4.5.0)
   faker (= 1.4.3)
   figaro (= 1.1.1)
