@@ -80,3 +80,5 @@ pickle-email-*.html
 
 # Planning folder
 /_plans/*
+# Ignore application configuration
+/config/application.yml
