@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :users, except: %i(index)
+  resources :users, only: %i(edit update destroy)
 
   # Root
   root to: 'visitors#index'

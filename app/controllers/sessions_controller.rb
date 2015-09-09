@@ -1,3 +1,4 @@
+# app/controllers/sessions_controller.rb
 class SessionsController < ApplicationController
   def new
     redirect_to '/auth/facebook'

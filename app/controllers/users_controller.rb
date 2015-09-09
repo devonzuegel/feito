@@ -1,12 +1,20 @@
+# app/controllers/users_controller.rb
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :correct_user?, except: [:index]
+  before_action :correct_user?, :set_user
 
-  def index
-    @users = User.all
+  def edit
   end
 
-  def show
+  def update
+  end
+
+  def destroy
+  end
+
+  private
+
+  def set_user
     @user = User.find(params[:id])
   end
 end

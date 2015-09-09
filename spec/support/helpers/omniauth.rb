@@ -1,4 +1,6 @@
+# spec/support/helpers/omniauth.rb
 module Omniauth
+  # Omniauth::Mock
   module Mock
     def auth_mock
       OmniAuth.config.mock_auth[:twitter] = {
@@ -15,6 +17,7 @@ module Omniauth
     end
   end
 
+  # Omniauth::SessionHelpers
   module SessionHelpers
     def signin
       visit root_path

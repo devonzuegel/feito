@@ -16,10 +16,10 @@ ActiveRecord::Schema.define(version: 20150908221233) do
   create_table "steps", force: :cascade do |t|
     t.string   "title"
     t.datetime "due"
-    t.boolean  "completed"
+    t.boolean  "completed",  default: false
     t.integer  "task_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   add_index "steps", ["task_id"], name: "index_steps_on_task_id"
@@ -27,12 +27,12 @@ ActiveRecord::Schema.define(version: 20150908221233) do
   create_table "tasks", force: :cascade do |t|
     t.string   "title"
     t.datetime "due"
-    t.boolean  "completed"
-    t.boolean  "archived"
+    t.boolean  "completed",  default: false
+    t.boolean  "archived",   default: false
     t.datetime "schedule"
     t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   add_index "tasks", ["user_id"], name: "index_tasks_on_user_id"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 20150908221233) do
     t.string   "name"
     t.string   "provider"
     t.string   "uid"
+    t.string   "api_key"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

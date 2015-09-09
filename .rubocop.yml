@@ -5,6 +5,7 @@ AllCops:
     - 'lib/**/*'
     - 'bin/**/*'
     - '_plans/**/*'
+    - 'Guardfile'
 
 Metrics/LineLength:
   Max: 95
