@@ -7,8 +7,9 @@ module Authenticable
     before_validation :initial_api_key, on: :create
   end
 
-  INVALID_API_KEY = 'That is not a valid api key. Please log in '   \
-                    'or sign up to retrieve your key, or resubmit ' \
+  INVALID_API_KEY = 'That is not a valid api key to access that ' \
+                    'content. Please log in or sign up to '       \
+                    'retrieve your key, or resubmit '             \
                     'the request as a visitor without a token.'
 
   # Class methods
