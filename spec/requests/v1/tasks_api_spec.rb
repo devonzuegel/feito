@@ -31,7 +31,7 @@ describe Api::V1::TasksController do
     end
 
     it 'should return a 404 when user tries to access a task that doesn\'t exist' do
-      get tasks_endpoint(1000000), api_key: user.api_key
+      get tasks_endpoint(1_000_000), api_key: user.api_key
       assert_response :not_found
     end
 
@@ -59,7 +59,7 @@ describe Api::V1::TasksController do
     end
 
     it 'should return a 404 when user tries to access a task that doesn\'t exist' do
-      get steps_endpoint(1000000), api_key: user.api_key
+      get steps_endpoint(1_000_000), api_key: user.api_key
       assert_response :not_found
     end
 

@@ -13,4 +13,12 @@ class Task < ActiveRecord::Base
   def belongs_to?(other_user)
     user == other_user
   end
+
+  def toggle_completed!
+    update_attributes(completed: !completed)
+  end
+
+  def toggle_archived!
+    update_attributes(archived: !archived)
+  end
 end
