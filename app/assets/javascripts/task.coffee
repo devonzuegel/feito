@@ -12,12 +12,12 @@
     schedule:  @props.task.schedule
 
   render: ->
-    div className: 'task', id: "task-#{@state.id}",
+    klass = if @state.completed then 'completed' else 'incompleted'
+    div className: "#{klass}-task", id: "task-#{@state.id}",
       input
         id: "checkbox-#{@state.id}"
         type: 'checkbox'
         checked: @state.completed
-        className: 'checkbox'
         onChange: @clicked
       li id: "title-#{@state.id}",     @state.title
       li id: "archived-#{@state.id}",  JSON.stringify(@state.archived)
@@ -26,9 +26,10 @@
       li id: "schedule-#{@state.id}",  "Scheduled: #{formatted_date(@state.schedule)}"
 
   componentDidMount: ->
+    $.putJSON 'api/v1/tasks', {}, (results) =>
+      console.log 'hello!'
 
   componentDidUpdate: ->
 
   clicked: ->
     @setState completed: !@state.completed
-    console.log @state

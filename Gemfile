@@ -29,6 +29,7 @@ gem 'httparty'                                  #
 gem 'responders',                   '~> 2.0'    # github.com/plataformatec/responders
 gem 'bourbon'
 gem 'neat'
+gem 'uuidtools'
 
 group :development, :test do
   gem 'pry-rails',                  '0.3.4'     #

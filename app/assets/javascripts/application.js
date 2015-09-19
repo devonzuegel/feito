@@ -17,3 +17,17 @@
 //= require react_ujs
 //= require moment
 //= require_tree .
+
+$.extend({
+  putJSON: function (url, data, cb) {
+    return $.ajax({
+      type:        'put',
+      url:          url,
+      processData: false,
+      data:        data,
+      success:     cb,
+      contentType: 'application/json',
+      dataType:    'json'
+    })
+  }
+});

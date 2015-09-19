@@ -1,3 +1,4 @@
+# app/controllers/api/api_controller.rb
 class Api::ApiController < ActionController::Base
   include ActionController::ImplicitRender
 

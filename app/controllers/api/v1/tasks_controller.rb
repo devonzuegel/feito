@@ -1,3 +1,4 @@
+# app/controllers/api/v1/tasks_controller.rb
 class Api::V1::TasksController < Api::ApiController
   before_action :set_task, only: %i(show steps)
 
@@ -16,7 +17,7 @@ class Api::V1::TasksController < Api::ApiController
   private
 
   def task_params
-    params.permit(:id)
+    params.permit(:id, :completed, :archived)
   end
 
   def set_task

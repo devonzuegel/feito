@@ -14,3 +14,4 @@
   componentDidMount: ->
 
   componentDidUpdate: ->
+    console.log 'TaskList updated!'
