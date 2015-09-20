@@ -8,8 +8,11 @@
 
   render: ->
     div className: 'task_list',
+      div, "Your API key: #{@props.api_key}"
       for task in @state.tasks
-        React.createElement Task, task: task
+        React.createElement Task,
+          task: task
+          api_key: @props.api_key
 
   componentDidMount: ->
 

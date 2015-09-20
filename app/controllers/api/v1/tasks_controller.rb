@@ -1,6 +1,6 @@
 # app/controllers/api/v1/tasks_controller.rb
 class Api::V1::TasksController < Api::ApiController
-  before_action :set_task, only: %i(show steps)
+  before_action :set_task, only: %i(show steps update)
 
   def index
     respond_with :api, :v1, @user.tasks, status: :ok
@@ -14,6 +14,11 @@ class Api::V1::TasksController < Api::ApiController
     respond_with :api, :v1, @task.steps, status: :ok
   end
 
+  def update
+    puts 'hola'.red
+    render json: @task, status: :ok
+  end
+
   private
 
   def task_params
@@ -22,6 +27,9 @@ class Api::V1::TasksController < Api::ApiController
 
   def set_task
     @task = Task.find(task_params[:id])
+    puts @task.nil? ? 'NIL' : 'NOT NIL'
+    ap @task
+    puts "@task.belongs_to(@user) = #{@task.belongs_to(@user)}".red
     return if @task.belongs_to?(@user)
 
     response_json = { status: User::INVALID_API_KEY }

@@ -21,13 +21,12 @@
 $.extend({
   putJSON: function (url, data, cb) {
     return $.ajax({
-      type:        'put',
+      type:         'PUT',
       url:          url,
-      processData: false,
-      data:        data,
-      success:     cb,
-      contentType: 'application/json',
-      dataType:    'json'
-    })
+      data:         JSON.stringify(data),
+      contentType:  'application/json',
+      dataType:     'json',
+      success:      cb
+    });
   }
 });
