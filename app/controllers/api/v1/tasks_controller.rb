@@ -15,7 +15,6 @@ class Api::V1::TasksController < Api::ApiController
   end
 
   def update
-    puts 'hola'.red
     render json: @task, status: :ok
   end
 
@@ -27,12 +26,9 @@ class Api::V1::TasksController < Api::ApiController
 
   def set_task
     @task = Task.find(task_params[:id])
-    puts @task.nil? ? 'NIL' : 'NOT NIL'
-    ap @task
-    puts "@task.belongs_to(@user) = #{@task.belongs_to(@user)}".red
     return if @task.belongs_to?(@user)
 
     response_json = { status: User::INVALID_API_KEY }
-    respond_with :api, :v1, response_json, status: :unauthorized
+    render json: response_json, status: :unauthorized
   end
 end
