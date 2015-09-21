@@ -30,7 +30,8 @@ gem 'responders',                   '~> 2.0'    # github.com/plataformatec/respo
 gem 'bourbon',                      '4.2.4'     #
 gem 'neat',                         '1.7.2'     #
 gem 'uuidtools',                    '2.1.5'     #
-gem 'google-api-client',            '0.8.6'     #
+gem 'google-api-client',            '0.8.6',    require: 'google/api_client'
+gem 'omniauth-google-oauth2',       '0.2.6'     #
 
 group :development, :test do
   gem 'pry-rails',                  '0.3.4'     #
