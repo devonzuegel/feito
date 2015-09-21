@@ -15,13 +15,14 @@ class Api::V1::TasksController < Api::ApiController
   end
 
   def update
+    @task.update_attributes(task_params)
     render json: @task, status: :ok
   end
 
   private
 
   def task_params
-    params.permit(:id, :completed, :archived)
+    params.permit(:id, :archived, :completed, :due, :schedule, :title)
   end
 
   def set_task
