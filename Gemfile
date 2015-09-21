@@ -25,11 +25,12 @@ gem 'contracts',                    '0.9'       # github.com/egonSchiele/contrac
 gem 'react-rails',                  '~>1.0'     # github.com/reactjs/react-rails
 gem 'momentjs-rails',               '2.10.3'    # github.com/derekprior/momentjs-rails
 gem 'awesome_print',                '1.6.1'     #
-gem 'httparty'                                  #
+gem 'httparty',                     '0.13.5'    #
 gem 'responders',                   '~> 2.0'    # github.com/plataformatec/responders
-gem 'bourbon'
-gem 'neat'
-gem 'uuidtools'
+gem 'bourbon',                      '4.2.4'     #
+gem 'neat',                         '1.7.2'     #
+gem 'uuidtools',                    '2.1.5'     #
+gem 'google-api-client',            '0.8.6'     #
 
 group :development, :test do
   gem 'pry-rails',                  '0.3.4'     #
