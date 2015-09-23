@@ -9,7 +9,8 @@ class ApplicationController < ActionController::Base
   private
 
   def development_signin
-    session[:user_id] = User.first.id if Rails.env == 'development'
+    # reset_session
+    # session[:user_id] ||= User.first.id if Rails.env == 'development'
   end
 
   def current_user
