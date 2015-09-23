@@ -5,14 +5,14 @@ Rails.application.routes.draw do
   root to: 'visitors#index'
 
   # Sign-in and authentication.
-  get '/auth/facebook/callback' => 'sessions#create'
-  get '/signin'                 => 'sessions#new',         as: :signin
-  get '/signout'                => 'sessions#destroy',     as: :signout
+  get '/signin'                 => 'sessions#new',     as: :signin
+  get '/signout'                => 'sessions#destroy', as: :signout
+  get '/auth/facebook/callback' => 'sessions#create',  as: :facebook_callback
   get '/auth/failure'           => 'sessions#failure'
 
-  # Connecting to google
-  get '/connect'                => 'google_oauth#connect', as: :connect
-  get '/auth/google/callback'   => 'google_oauth#callback'
+  # Connecting to google.
+  get '/auth/google/redirect'   => 'google_oauth#redirect',  as: :google_redirect
+  get '/auth/google/callback'   => 'google_oauth#callback',  as: :google_callback
   get '/calendars'              => 'google_oauth#calendars', as: :calendars
 
   namespace :api, defaults: { format: :json } do

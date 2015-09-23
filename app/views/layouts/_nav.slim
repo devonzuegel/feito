@@ -3,3 +3,7 @@
   li= current_user.name
 - else
   li= link_to 'Sign in', signin_path
+
+.spacer
+
+code= "session[:access_token] = #{session[:access_token]}"

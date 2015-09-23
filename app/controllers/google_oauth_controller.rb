@@ -2,103 +2,81 @@
 class GoogleOauthController < ApplicationController
   require 'google/api_client/client_secrets'
 
-  REFRESH_URL = 'https://accounts.google.com/o/oauth2/token'
+  APPLICATION_NAME     = 'Feito'
+  APPLICATION_VERSION  = '0.0.0'
+  AUTHORIZATION_URI    = 'https://accounts.google.com/o/oauth2/auth'
+  TOKEN_CREDENTIAL_URI = 'https://accounts.google.com/o/oauth2/token'
 
-  def connect
-    auth_client = client_secrets.to_authorization
-    auth_client.update!(
-      scope:        GoogleOauth.scope(%w(userinfo.email calendar)),
-      redirect_uri: "#{ENV['domain']}/auth/google/callback"
-    )
-    auth_uri = auth_client.authorization_uri.to_s
-    redirect_to(auth_uri)
+  # TODO:
+  # - If the user cancels at the consent screen Google will redirect back
+  #   to the callback action with an error parameter instead of the code parameter.
+  #
+  # - Calling the API will fail if the access token has expired (access
+  #   tokens are only valid for an hour). When obtaining the access token
+  #   Google will also return a “refresh_token” which you can use to re-request
+  #   access tokens directly, without having to re-authorize.
+  #
+  # - Calling the API might fail for other reasons, so you might also want to
+  #   handle other response errors (response.data will have an 'error' key
+  #   instead of the 'items' key).
+
+  def redirect
+    google_api_client = Google::APIClient.new(app_info)
+
+    google_api_client.authorization = Signet::OAuth2::Client.new({
+      client_id:          ENV.fetch('google_api_client_id'),
+      client_secret:      ENV.fetch('google_api_client_secret'),
+      authorization_uri:  AUTHORIZATION_URI,
+      scope:              GoogleOauth.scope(%w(userinfo.email calendar)),
+      redirect_uri:       url_for(action: :callback)
+    })
+
+    authorization_uri = google_api_client.authorization.authorization_uri
+    redirect_to authorization_uri.to_s
   end
 
   def callback
-    @auth_client = auth_client
-    @auth_client.code = request['code']
-    @auth_client.fetch_access_token!
-    @auth_client.client_secret = nil
+    google_api_client = Google::APIClient.new(app_info)
 
-    session[:access_token]  = @auth_client.access_token
-    session[:refresh_token] = @auth_client.refresh_token
-    session[:expires_in]    = @auth_client.expires_in  # Seconds until token expires
-    session[:issued_at]     = @auth_client.issued_at   # Time token was issued
+    google_api_client.authorization = Signet::OAuth2::Client.new({
+      client_id:            ENV.fetch('google_api_client_id'),
+      client_secret:        ENV.fetch('google_api_client_secret'),
+      token_credential_uri: TOKEN_CREDENTIAL_URI,
+      redirect_uri:         url_for(action: :callback),
+      code:                 params[:code]
+    })
 
-    to_print = {
-      access_token: session[:access_token],
-      refresh_token: session[:refresh_token],
-      expires_in: session[:expires_in],
-      issued_at: session[:issued_at]
-    }
-    puts '--------------------------------------------------------'.black
-    ap to_print
-    puts '--------------------------------------------------------'.black
+    response = google_api_client.authorization.fetch_access_token!
+    session[:access_token] = response['access_token']
 
-    redirect_to calendars_path
+    redirect_to url_for(action: :calendars)
   end
 
   def calendars
-    redirect_to connect_path if session[:access_token].nil?
-    @api_client ||= Google::APIClient.new
-    @api_client.authorization.access_token = session[:access_token]
+    google_api_client = Google::APIClient.new(app_info)
 
-    # puts "@api_client.authorization.expired? = #{@api_client.authorization.expired?}".red
-    refresh_auth_token# if @api_client.authorization.expired?
+    google_api_client.authorization = Signet::OAuth2::Client.new({
+      client_id:     ENV.fetch('google_api_client_id'),
+      client_secret: ENV.fetch('google_api_client_secret'),
+      access_token:  session[:access_token]
+    })
 
-    service = @api_client.discovered_api('calendar', 'v3')
+    google_calendar_api = google_api_client.discovered_api('calendar', 'v3')
 
-    @calendars = @api_client.execute(
-      api_method: service.calendar_list.list,
-      parameters: {},
-      headers:    { 'Content-Type' => 'application/json' }
-    ).data.items
+    response = google_api_client.execute({
+      api_method: google_calendar_api.calendar_list.list,
+      parameters: {}
+    })
+
+    @calendars = response.data['items']
   end
 
   private
 
-  def auth_client
-    auth_client = client_secrets.to_authorization
-    auth_client.update!(
-      scope:        GoogleOauth.scope(%w(userinfo.email calendar)),
-      redirect_uri: "#{ENV['domain']}/auth/google/callback",
-      accessType:   'offline'
-    )
-    auth_client
-  end
-
-  def options
+  def app_info
     {
-      body: {
-        client_id:     ENV['google_client_id'],
-        client_secret: ENV['google_client_secret'],
-        refresh_token: session[:refresh_token],
-        grant_type:    'refresh_token'
-      },
-      headers: {
-        'Content-Type' => 'application/x-www-form-urlencoded'
-      }
+      application_name:    APPLICATION_NAME,
+      application_version: APPLICATION_VERSION
     }
-  end
-
-  def refresh_auth_token
-    @api_client ||= Google::APIClient.new
-    @response = HTTParty.post('https://accounts.google.com/o/oauth2/token', options)
-    ap @response
-    if @response.code == 200
-      @api_client.token = @response.parsed_response['access_token']
-      @api_client.expires_in = DateTime.now + @response.parsed_response['expires_in'].seconds
-      @api_client.save
-    else
-      Rails.logger.error('Unable to refresh google_oauth2 authentication token.')
-      Rails.logger.error("Refresh token response body: #{@response.body}")
-    end
-  end
-
-  def client_secrets
-    Google::APIClient::ClientSecrets.new('web' => {
-                                           client_id:      ENV['google_client_id'],
-                                           client_secret:  ENV['google_client_secret']
-                                         })
   end
 end

@@ -1,6 +1,5 @@
 h2 Calendars
 
 = debug @auth_client
-/= debug @calendars
 - @calendars.each do |cal|
   li(style="background-color: #{cal.backgroundColor}")= cal.summary
