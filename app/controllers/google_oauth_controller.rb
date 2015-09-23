@@ -6,6 +6,7 @@ class GoogleOauthController < ApplicationController
   APPLICATION_VERSION  = '0.0.0'
   AUTHORIZATION_URI    = 'https://accounts.google.com/o/oauth2/auth'
   TOKEN_CREDENTIAL_URI = 'https://accounts.google.com/o/oauth2/token'
+  REVOKE_ACCESS_URI    = 'https://accounts.google.com/o/oauth2/revoke'
 
   # TODO:
   #
@@ -23,20 +24,7 @@ class GoogleOauthController < ApplicationController
 
   def redirect
     revoke_access
-
-    google_api_client = Google::APIClient.new(app_info)
-    google_api_client.authorization = Signet::OAuth2::Client.new(
-      client_id:          ENV.fetch('google_api_client_id'),
-      client_secret:      ENV.fetch('google_api_client_secret'),
-      authorization_uri:  AUTHORIZATION_URI,
-      scope:              GoogleOauth.scope(%w(userinfo.email userinfo.profile calendar)),
-      redirect_uri:       url_for(action: :callback),
-      access_type:        'offline',
-      prompt:             'consent',
-      approval_prompt:    'force'
-    )
-
-    authorization_uri = google_api_client.authorization.authorization_uri
+    authorization_uri = authorization_client.authorization.authorization_uri
     redirect_to authorization_uri.to_s
   end
 
@@ -81,12 +69,22 @@ class GoogleOauthController < ApplicationController
 
   private
 
-  def validate_access_token(google_api_client)
-    if google_api_client.authorization.expired?
-      puts "google_api_client.authorization.expired? = #{google_api_client.authorization.expired?}".red
-    else
-      puts "google_api_client.authorization.expired? = #{google_api_client.authorization.expired?}".green
-    end
+  def authorization_client
+    google_api_client = Google::APIClient.new(app_info)
+    google_api_client.authorization = Signet::OAuth2::Client.new(
+      client_id:          ENV.fetch('google_api_client_id'),
+      client_secret:      ENV.fetch('google_api_client_secret'),
+      authorization_uri:  AUTHORIZATION_URI,
+      scope:              GoogleOauth.scope(%w(userinfo.email userinfo.profile calendar)),
+      redirect_uri:       url_for(action: :callback),
+      access_type:        'offline',
+      prompt:             'consent',
+      approval_prompt:    'force'
+    )
+    google_api_client
+  end
+
+  def validate_access_token(_google_api_client)
   end
 
   def app_info
@@ -99,8 +97,9 @@ class GoogleOauthController < ApplicationController
   def revoke_access
     return if session[:access_token].nil?
 
-    uri       = URI('https://accounts.google.com/o/oauth2/revoke')
+    uri       = URI(REVOKE_ACCESS_URI)
     uri.query = URI.encode_www_form(token: session[:access_token])
+
     response  = Net::HTTP.get(uri)
     logger.info(response)
 
