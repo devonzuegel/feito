@@ -25,6 +25,16 @@ class GoogleOauthController < ApplicationController
     session[:expires_in]    = @auth_client.expires_in  # Seconds until token expires
     session[:issued_at]     = @auth_client.issued_at   # Time token was issued
 
+    to_print = {
+      access_token: session[:access_token],
+      refresh_token: session[:refresh_token],
+      expires_in: session[:expires_in],
+      issued_at: session[:issued_at]
+    }
+    puts '--------------------------------------------------------'.black
+    ap to_print
+    puts '--------------------------------------------------------'.black
+
     redirect_to calendars_path
   end
 
@@ -33,7 +43,8 @@ class GoogleOauthController < ApplicationController
     @api_client ||= Google::APIClient.new
     @api_client.authorization.access_token = session[:access_token]
 
-    refresh_auth_token if @api_client.authorization.expired?
+    # puts "@api_client.authorization.expired? = #{@api_client.authorization.expired?}".red
+    refresh_auth_token# if @api_client.authorization.expired?
 
     service = @api_client.discovered_api('calendar', 'v3')
 
@@ -50,7 +61,8 @@ class GoogleOauthController < ApplicationController
     auth_client = client_secrets.to_authorization
     auth_client.update!(
       scope:        GoogleOauth.scope(%w(userinfo.email calendar)),
-      redirect_uri: "#{ENV['domain']}/auth/google/callback"
+      redirect_uri: "#{ENV['domain']}/auth/google/callback",
+      accessType:   'offline'
     )
     auth_client
   end
@@ -72,6 +84,7 @@ class GoogleOauthController < ApplicationController
   def refresh_auth_token
     @api_client ||= Google::APIClient.new
     @response = HTTParty.post('https://accounts.google.com/o/oauth2/token', options)
+    ap @response
     if @response.code == 200
       @api_client.token = @response.parsed_response['access_token']
       @api_client.expires_in = DateTime.now + @response.parsed_response['expires_in'].seconds
