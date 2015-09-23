@@ -1,17 +1,10 @@
 - if signed_in?
   li= link_to 'Sign out', signout_path
   li= current_user.name
+  li= link_to 'Connect GCal', google_redirect_path
 - else
   li= link_to 'Sign in', signin_path
 
-.spacer
-
-code= "session[:access_token] = #{session[:access_token]}"
-
-.spacer
-
-code= "session[:refresh_token] = #{session[:refresh_token]}"
-
-.spacer
-
-code= "session[:expires_at] = #{session[:expires_at]}"
+li: pre= "session[:access_token]  = #{session[:access_token]}"
+li: pre= "session[:refresh_token] = #{session[:refresh_token]}"
+li: pre= "session[:expires_at]    = #{session[:expires_at]}"
