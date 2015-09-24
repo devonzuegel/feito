@@ -1,7 +1,15 @@
 # feito/app/services/google_oauth.rb
+require 'google/api_client'
+require 'google/api_client/client_secrets'
+require 'google/api_client/auth/installed_app'
+require 'google/api_client/auth/storage'
+require 'google/api_client/auth/storages/file_store'
+require 'fileutils'
+
 class GoogleOauth
   APPLICATION_NAME     = 'Feito'
   APPLICATION_VERSION  = '0.0.0'
+
   AUTH_URL             = 'https://www.googleapis.com/auth'
   TOKEN_CREDENTIAL_URI = 'https://accounts.google.com/o/oauth2/token'
   AUTHORIZATION_URI    = 'https://accounts.google.com/o/oauth2/auth'
