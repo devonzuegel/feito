@@ -8,3 +8,9 @@
     li= link_to 'Calendars', calendars_path
 - else
   li= link_to 'Sign in', signin_path
+
+- if current_user.present?
+  pre
+    = "access_token  = #{current_user.access_token}\n\n"
+    = "refresh_token = #{current_user.refresh_token}\n\n"
+    = "expires_at    = #{current_user.expires_at}\n\n"

@@ -1,6 +1,9 @@
 # app/models/user.rb
 class User < ActiveRecord::Base
   include Authenticable
+  include GoogleAuthorizable
+
+  # attr_accessor :access_token, :expires_at, :refresh_token
 
   # RELATIONSHIPS #
   has_many :tasks, dependent: :destroy
