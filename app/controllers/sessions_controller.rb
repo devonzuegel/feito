@@ -1,7 +1,6 @@
 # app/controllers/sessions_controller.rb
 class SessionsController < ApplicationController
   def new
-    logger.info "\nENV['omniauth_provider_key'] = #{ENV['omniauth_provider_key']}\n"
     redirect_to '/auth/facebook'
   end
 
