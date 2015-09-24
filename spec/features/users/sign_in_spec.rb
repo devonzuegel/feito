@@ -9,7 +9,7 @@ feature 'Sign in', :omniauth do
   #   When I sign in
   #   Then I see a success message
   scenario 'user can sign in with valid account' do
-    signin
+    sign_in_feature
     expect(page).to have_content('Sign out')
   end
 

@@ -1,7 +1,7 @@
 describe Api::V1::TasksController do
   let(:user) { create(:user, :with_tasks) }
 
-  describe '/tasks/#{id}/steps endpoint', :focus do
+  describe '/tasks/#{id}/steps endpoint' do
     let(:hidden_task) { create(:task) }
 
     it 'should return an :unauthorized error when user tries to access a task (s)he doesn\'t own' do
