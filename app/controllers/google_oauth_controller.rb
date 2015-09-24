@@ -3,9 +3,6 @@ class GoogleOauthController < ApplicationController
   require 'google/api_client/client_secrets'
   before_action :authenticate_user!, only: %i(calendars)
 
-  APPLICATION_NAME     = 'Feito'
-  APPLICATION_VERSION  = '0.0.0'
-  AUTHORIZATION_URI    = 'https://accounts.google.com/o/oauth2/auth'
   TOKEN_CREDENTIAL_URI = 'https://accounts.google.com/o/oauth2/token'
   REVOKE_ACCESS_URI    = 'https://accounts.google.com/o/oauth2/revoke'
 
@@ -20,63 +17,21 @@ class GoogleOauthController < ApplicationController
 
   def redirect
     revoke_access
-    authorization_uri = authorization_client.authorization.authorization_uri
+    authorization_uri = GoogleOauth.authorization_uri(url_for(action: :callback))
     redirect_to authorization_uri.to_s
   end
 
   def callback
-    response = token_request_client.authorization.fetch_access_token!
+    response = GoogleOauth.fetch_access_token!(params[:code], url_for(action: :callback))
     current_user.update_access(response)
     redirect_to calendars_path
   end
 
   def calendars
-    ap current_user
-    client = GoogleOauth.api_client(current_user)
-    google_calendar_api = client.discovered_api('calendar', 'v3')
-    response = client.execute(
-      api_method: google_calendar_api.calendar_list.list,
-      parameters: {}
-    )
-
-    @calendars = response.data['items']
+    @calendars = GoogleCalendar.new(current_user).list
   end
 
   private
-
-  def authorization_client
-    client = Google::APIClient.new(app_info)
-    client.authorization = Signet::OAuth2::Client.new(
-      client_id:          ENV.fetch('google_api_client_id'),
-      client_secret:      ENV.fetch('google_api_client_secret'),
-      authorization_uri:  AUTHORIZATION_URI,
-      scope:              GoogleOauth.scope(%w(userinfo.email userinfo.profile calendar)),
-      redirect_uri:       url_for(action: :callback),
-      access_type:        'offline',
-      prompt:             'consent',
-      approval_prompt:    'force'
-    )
-    client
-  end
-
-  def token_request_client
-    client = Google::APIClient.new(app_info)
-    client.authorization = Signet::OAuth2::Client.new(
-      client_id:            ENV.fetch('google_api_client_id'),
-      client_secret:        ENV.fetch('google_api_client_secret'),
-      token_credential_uri: TOKEN_CREDENTIAL_URI,
-      redirect_uri:         url_for(action: :callback),
-      code:                 params[:code]
-    )
-    client
-  end
-
-  def app_info
-    {
-      application_name:    APPLICATION_NAME,
-      application_version: APPLICATION_VERSION
-    }
-  end
 
   def revoke_access
     return if current_user.access_token.nil?

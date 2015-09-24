@@ -15,7 +15,7 @@ module GoogleAuthorizable
   module InstanceMethods
     def update_access(response)
       fail 'MissingGoogleAccessToken' if response['access_token'].nil?
-      update_attributes!(
+      update_attributes(
         access_token:  response.fetch('access_token'),
         expires_at:    response.fetch('expires_in').seconds.from_now,
         refresh_token: refresh_token || response['refresh_token']
@@ -23,7 +23,7 @@ module GoogleAuthorizable
     end
 
     def revoke_access
-      update_attributes!(
+      update_attributes(
         access_token:  nil,
         expires_at:    nil,
         refresh_token: nil

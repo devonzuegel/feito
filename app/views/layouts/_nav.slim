@@ -3,7 +3,7 @@
   li= current_user.name
   li= link_to 'Tasks', root_path
   - if current_user.access_token.nil?
-    li= link_to 'Connect GCal', google_redirect_path
+    li= link_to 'Connect GCal', 'auth/google/redirect'
   - else
     li= link_to 'Calendars', calendars_path
 - else
