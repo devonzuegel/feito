@@ -5,9 +5,8 @@ class GoogleCalendar
   end
 
   def list
-    results = @client.execute(api_method: api.calendar_list.list, parameters: {}).data['items']
-    ap results
-    results || []
+    result = @client.execute(api_method: api.calendar_list.list, parameters: {})
+    result.data['items'] || []
   end
 
   def api

@@ -6,6 +6,7 @@
     li= link_to 'Connect GCal', 'auth/google/redirect'
   - else
     li= link_to 'Calendars', calendars_path
+    li= link_to 'Revoke', google_revoke_path
 - else
   li= link_to 'Sign in', signin_path
 

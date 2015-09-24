@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   # Connecting to google.
   get '/auth/google/redirect'   => 'google_oauth#redirect',  as: :google_redirect
   get '/auth/google/callback'   => 'google_oauth#callback',  as: :google_callback
+  get '/auth/google/revoke'     => 'google_oauth#revoke',    as: :google_revoke
   get '/calendars'              => 'google_oauth#calendars', as: :calendars
 
   namespace :api, defaults: { format: :json } do

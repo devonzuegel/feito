@@ -5,6 +5,7 @@ class GoogleOauth
   AUTH_URL             = 'https://www.googleapis.com/auth'
   TOKEN_CREDENTIAL_URI = 'https://accounts.google.com/o/oauth2/token'
   AUTHORIZATION_URI    = 'https://accounts.google.com/o/oauth2/auth'
+  REVOKE_ACCESS_URI    = 'https://accounts.google.com/o/oauth2/revoke'
 
   def self.api_client(user)
     client = Google::APIClient.new(app_info)
@@ -35,7 +36,7 @@ class GoogleOauth
       client_id:          ENV.fetch('google_api_client_id'),
       client_secret:      ENV.fetch('google_api_client_secret'),
       authorization_uri:  AUTHORIZATION_URI,
-      scope:              GoogleOauth.scope(%w(userinfo.email userinfo.profile calendar)),
+      scope:              scope(%w(userinfo.email userinfo.profile calendar)),
       redirect_uri:       redirect_uri,
       access_type:        'offline',
       prompt:             'consent',
@@ -44,11 +45,21 @@ class GoogleOauth
     client.authorization.authorization_uri
   end
 
-  def self.scope(names)
-    names.map { |name| "#{AUTH_URL}/#{name}" }.join(' ')
+  def self.revoke_access(user)
+    return if user.access_token.nil?
+
+    uri       = URI(REVOKE_ACCESS_URI)
+    uri.query = URI.encode_www_form(token: user.access_token)
+    response  = Net::HTTP.get(uri)
+
+    user.revoke_access
   end
 
   private
+
+  def self.scope(names)
+    names.map { |name| "#{AUTH_URL}/#{name}" }.join(' ')
+  end
 
   def self.app_info
     {
