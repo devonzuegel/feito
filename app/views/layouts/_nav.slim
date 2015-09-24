@@ -2,7 +2,7 @@
   li= link_to 'Sign out', signout_path
   li= current_user.name
   li= link_to 'Tasks', root_path
-  - if session[:access_token].nil?
+  - if current_user.access_token.nil?
     li= link_to 'Connect GCal', google_redirect_path
   - else
     li= link_to 'Calendars', calendars_path

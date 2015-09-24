@@ -1,6 +1,7 @@
 # app/controllers/google_oauth_controller.rb
 class GoogleOauthController < ApplicationController
   require 'google/api_client/client_secrets'
+  before_action :authenticate_user!, only: %i(calendars)
 
   APPLICATION_NAME     = 'Feito'
   APPLICATION_VERSION  = '0.0.0'
@@ -25,12 +26,13 @@ class GoogleOauthController < ApplicationController
 
   def callback
     response = token_request_client.authorization.fetch_access_token!
-    update_session_auth(response)
+    current_user.update_access(response)
     redirect_to calendars_path
   end
 
   def calendars
-    client = google_api_client
+    ap current_user
+    client = GoogleOauth.api_client(current_user)
     google_calendar_api = client.discovered_api('calendar', 'v3')
     response = client.execute(
       api_method: google_calendar_api.calendar_list.list,
@@ -69,60 +71,11 @@ class GoogleOauthController < ApplicationController
     client
   end
 
-  def refresh_auth_request_client
-    client = Google::APIClient.new(app_info)
-    client.authorization = Signet::OAuth2::Client.new(
-      client_id:            ENV.fetch('google_api_client_id'),
-      client_secret:        ENV.fetch('google_api_client_secret'),
-      token_credential_uri: TOKEN_CREDENTIAL_URI,
-      refresh_token:        user.refresh_token,
-      grant_type:           'refresh_token'
-    )
-    client
-  end
-
-  def valid_access_token(client)
-    return client unless client.authorization.expired?
-
-    client = refresh_auth_request_client
-    response = client.authorization.fetch_access_token!
-    update_session_auth(response)
-    client
-  end
-
   def app_info
     {
       application_name:    APPLICATION_NAME,
       application_version: APPLICATION_VERSION
     }
-  end
-
-  def google_api_client
-    client = Google::APIClient.new(app_info)
-    client.authorization = Signet::OAuth2::Client.new(
-      client_id:     ENV.fetch('google_api_client_id'),
-      client_secret: ENV.fetch('google_api_client_secret'),
-      access_token:  current_user.access_token,
-      expires_at:    current_user.expires_at
-    )
-    valid_access_token(client)
-  end
-
-  def update_session_auth(response)
-    fail 'MissingGoogleAccessToken' if response['access_token'].nil?
-    current_user.update_attributes!(
-      access_token:  response.fetch('access_token'),
-      expires_at:    response.fetch('expires_in').seconds.from_now,
-      refresh_token: current_user.refresh_token || response['refresh_token']
-    )
-  end
-
-  def clear_session_auth
-    current_user.update_attributes(
-      access_token:  nil,
-      expires_at:    nil,
-      refresh_token: nil
-    )
   end
 
   def revoke_access
@@ -134,6 +87,6 @@ class GoogleOauthController < ApplicationController
     response  = Net::HTTP.get(uri)
     logger.info(response)
 
-    clear_session_auth
+    current_user.revoke_access
   end
 end
